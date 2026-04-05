@@ -11,19 +11,28 @@ from model import CrowdMLP
 from dataset import CrowdDataset
 
 # Import constants: --->
-from const import DEVICE, DATASET_ROOT, BATCH_SIZE, VISUALISATIONS, MODEL, VISUAL_ROOT, IMAGE_COLOR, KERNEL, BOTTLENECK
+from const import DEVICE, DATASET_ROOT, BATCH_SIZE, VISUALISATIONS, MODEL, VISUAL_ROOT, IMAGE_COLOR, KERNEL, BOTTLENECK, GRAY
+
+# Set the color channels of the input dimension: --->
+if GRAY:
+    CHANNEL = 1
+elif not GRAY:
+    CHANNEL = 3
+else:
+    print(f"The value of GRAY = {GRAY} is invalid!")
+    quit()
 
 # Load the test subset: --->
 test_dataset = CrowdDataset(DATASET_ROOT, split = 'test')
 test_loader = DataLoader(test_dataset, batch_size = BATCH_SIZE, shuffle = False)
 
 # Load THE trained model: --->
-model = CrowdMLP().to(DEVICE)
+model = CrowdMLP(in_channels = CHANNEL).to(DEVICE)
 model.load_state_dict(torch.load(MODEL, map_location = DEVICE))
 model.eval()
 
 # Check whether the directory exists or not: --->
-os.makedirs(VISUAL_ROOT, exist_ok=True)
+os.makedirs(VISUAL_ROOT, exist_ok = True)
 
 with torch.no_grad():
     for inputs, gt_maps in test_loader:
@@ -38,19 +47,19 @@ with torch.no_grad():
             # image = inputs[idx].cpu().numpy().transpose(1, 2, 0)
             image = inputs[idx].cpu()
 
-            print(f"\nImage {idx + 1} shape before transpose: {image.shape}")
-            print(f"Min value in image {idx + 1}: {image.min()}")
-            print(f"Max value in image {idx + 1}: {image.max()}")
-            print(f"Mean value in image {idx + 1}: {image.mean()}")
+            # print(f"\nImage {idx + 1} shape before transpose: {image.shape}")
+            # print(f"Min value in image {idx + 1}: {image.min()}")
+            # print(f"Max value in image {idx + 1}: {image.max()}")
+            # print(f"Mean value in image {idx + 1}: {image.mean()}")
 
-            image = image * 256.0
+            image = image * 255.0
             image = image.numpy().transpose(1, 2, 0)
             image = np.clip(image, 0, 255).astype(np.uint8)
 
-            print(f"\nImage {idx + 1} shape after transpose: {image.shape}")
-            print(f"Min value in image {idx + 1}: {image.min()}")
-            print(f"Max value in image {idx + 1}: {image.max()}")
-            print(f"Mean value in image {idx + 1}: {image.mean()}\n")
+            # print(f"\nImage {idx + 1} shape after transpose: {image.shape}")
+            # print(f"Min value in image {idx + 1}: {image.min()}")
+            # print(f"Max value in image {idx + 1}: {image.max()}")
+            # print(f"Mean value in image {idx + 1}: {image.mean()}\n")
 
             gt_map = gt_maps[idx].squeeze().cpu().numpy()
             pred_map = outputs[idx].squeeze().cpu().numpy()
@@ -63,7 +72,10 @@ with torch.no_grad():
 
             fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
-            axs[0].imshow(image)
+            if image.shape[2] == 1:
+                axs[0].imshow(image.squeeze(), cmap = 'gray')
+            else:
+                axs[0].imshow(image)
             axs[0].set_title("Input Image")
 
             axs[1].imshow(gt_map, cmap='jet')
@@ -77,8 +89,10 @@ with torch.no_grad():
 
             plt.tight_layout()
 
-            plt.savefig(f"{VISUAL_ROOT}/ts_sample_{idx + 1}_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png")
+            save_path = f"{VISUAL_ROOT}/ts_sample_{idx + 1}_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
+            plt.savefig(save_path)
             plt.close()
+            print(f"Saved visualization as: {save_path}")
 
             idx += 1
             del image
@@ -86,7 +100,5 @@ with torch.no_grad():
             del pred_map
             del img_gt_count
             del img_pred_count
-
-            print(f"Saved visualization as: {VISUAL_ROOT}/ts_sample_{idx + 1}_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png.")
 
         break
