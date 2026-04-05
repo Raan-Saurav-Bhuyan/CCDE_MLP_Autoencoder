@@ -209,16 +209,9 @@ __marimo__/
 # VS Code Workspace Directory: --->
 .vscode/
 
-# Project results and visualizations directories: --->
-visualizations/
-results/
-plots/
-annotations/
-
 # Project saved model params paths: --->
 checkpoints/
 ground_truths/
 
-# Extras: --->
-abbrev/
+# Dataset path: --->
 dataset/
