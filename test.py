@@ -13,25 +13,34 @@ from loss import CompositeCrowdLoss
 from plots import test_loss_plot
 
 # Import constants: --->
-from const import DEVICE, DATASET_ROOT, BATCH_SIZE,  MODEL, VISUAL_ROOT, CSV_ROOT, CSV_NAME
+from const import DEVICE, DATASET_ROOT, BATCH_SIZE,  MODEL, CSV_ROOT, CSV_NAME, GRAY
+
+# Set the color channels of the input dimension: --->
+if GRAY:
+    CHANNEL = 1
+elif not GRAY:
+    CHANNEL = 3
+else:
+    print(f"The value of GRAY = {GRAY} is invalid!")
+    quit()
 
 def test_model():
     # Load the test subset: --->
-    test_dataset = CrowdDataset(DATASET_ROOT, split='test')
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    test_dataset = CrowdDataset(DATASET_ROOT, split = 'test')
+    test_loader = DataLoader(test_dataset, batch_size = BATCH_SIZE, shuffle = False)
 
     # Load THE trained model: --->
-    model = CrowdMLP().to(DEVICE)
-    model.load_state_dict(torch.load(MODEL, map_location=DEVICE))
+    model = CrowdMLP(in_channels = CHANNEL).to(DEVICE)
+    model.load_state_dict(torch.load(MODEL, map_location = DEVICE))
     model.eval()
 
     # Instantiate loss class object: --->
     criterion = CompositeCrowdLoss()
 
     # Check whether the directory exists or not: --->
-    os.makedirs(CSV_ROOT, exist_ok=True)
+    os.makedirs(CSV_ROOT, exist_ok = True)
 
-    # Initialization of batch-wise metric history: --->
+    # Initialization of metric history: --->
     all_pred_counts = []
     all_gt_counts = []
     batch_losses = []
@@ -47,28 +56,25 @@ def test_model():
             outputs = model(inputs)
             loss, mse, mae = criterion(outputs, gt_maps)
 
-            # Compute the crowd count from the model predicted density maps: --->
-            pred_count = torch.sum(outputs).item()
-            gt_count = torch.sum(gt_maps).item()
+            # Compute the crowd count from the model predicted density maps (per image): --->
+            pred_counts = torch.sum(outputs, dim = [1, 2, 3])
+            gt_counts = torch.sum(gt_maps, dim = [1, 2, 3])
 
-            # Store batch metrics: --->
-            all_pred_counts.append(pred_count)
-            all_gt_counts.append(gt_count)
+            # Store per-image counts and batch-wise losses: --->
+            all_pred_counts.extend(pred_counts.cpu().numpy())
+            all_gt_counts.extend(gt_counts.cpu().numpy())
 
             batch_losses.append(loss.item())
             batch_mse.append(mse.item())
             batch_mae.append(mae.item())
 
-            print(f"[Batch {idx + 1}/{int(len(test_loader.dataset) / BATCH_SIZE) + 1}] Loss: {loss.item():.4f} | MSE Loss: {mse.item():.4f} | MAE Loss: {mae.item():.4f}")
+            print(f"[Batch {idx + 1}/{len(test_loader)}] Loss: {loss.item():.4f} | MSE Loss: {mse.item():.4f} | MAE Loss: {mae.item():.4f}")
 
-    # Save Comparison Table as CSV file: --->
+    # Save per-image comparison table as CSV file: --->
     comparison_df = pd.DataFrame({
         "Image_Index": list(range(1, len(all_pred_counts)+1)),
         "Predicted_Count": all_pred_counts,
         "Ground_Truth_Count": all_gt_counts,
-        "MSE_Loss": batch_mse,
-        "MAE_Loss": batch_mae,
-        "Total_Loss": batch_losses
     })
 
     comparison_df.to_csv(CSV_NAME, index=False)

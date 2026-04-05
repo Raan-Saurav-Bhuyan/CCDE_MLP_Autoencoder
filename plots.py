@@ -8,10 +8,12 @@ from const import PLOT_ROOT, TRAIN_TOTAL_LOSS, TRAIN_MSE_LOSS, TRAIN_MAE_LOSS, T
 # Helper to generate separate plots for each loss: --->
 def save_plot(y_values, x_label, y_label, title, save_path, color = 'black', marker = None):
     plt.figure(figsize = (10, 6))
+
     plt.plot(y_values, label = title, color = color, marker = marker)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
+
     plt.legend()
     plt.grid(True)
     plt.tight_layout()

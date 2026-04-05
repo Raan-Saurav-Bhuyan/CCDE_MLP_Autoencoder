@@ -18,7 +18,7 @@ else:
     pass
 
 MODEL_ROOT = "checkpoints"
-DATASET_ROOT = "SHT_B"                              #! <--------------
+DATASET_ROOT = "dataset/SHT_A"                 #! <--------------
 BOTTLENECK = "1024_256_64_16"                  #! <--------------
 KERNEL = "SIGMA_15"                                    #! <--------------
 GT_DENSITY_MAP_ROOT = KERNEL.lower()
@@ -28,12 +28,12 @@ PLOT_ROOT = "plots"
 
 # File names: --->
 MODEL = f"{MODEL_ROOT}/ts_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.pth"
-CSV_NAME = f"{CSV_ROOT}/ts_test_count_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.csv"
+CSV_NAME = f"{CSV_ROOT}/ts_test_count_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.csv"
 
 # Plot names: --->
-TRAIN_TOTAL_LOSS = f"{PLOT_ROOT}/ts_train_total_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
-TEST_TOTAL_LOSS = f"{PLOT_ROOT}/ts_test_total_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
-TRAIN_MSE_LOSS = f"{PLOT_ROOT}/ts_train_mse_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
-TEST_MSE_LOSS = f"{PLOT_ROOT}/ts_test_mse_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
-TRAIN_MAE_LOSS = f"{PLOT_ROOT}/ts_train_mae_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
-TEST_MAE_LOSS = f"{PLOT_ROOT}/ts_test_mae_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_2.png"
+TRAIN_TOTAL_LOSS = f"{PLOT_ROOT}/train_total_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"
+TEST_TOTAL_LOSS = f"{PLOT_ROOT}/test_total_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"
+TRAIN_MSE_LOSS = f"{PLOT_ROOT}/train_mse_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"
+TEST_MSE_LOSS = f"{PLOT_ROOT}/test_mse_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"
+TRAIN_MAE_LOSS = f"{PLOT_ROOT}/train_mae_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"
+TEST_MAE_LOSS = f"{PLOT_ROOT}/test_mae_{IMAGE_COLOR.lower()}_{KERNEL.lower()}_{BOTTLENECK.lower()}_1.png"

@@ -24,16 +24,16 @@ else:
 
 def train_model():
     # Load the train subset: --->
-    train_dataset = CrowdDataset(DATASET_ROOT, split='train')
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    train_dataset = CrowdDataset(DATASET_ROOT, split = 'train')
+    train_loader = DataLoader(train_dataset, batch_size = BATCH_SIZE, shuffle = True)
 
     # Make the directory for the model saving: --->
-    os.makedirs(MODEL_ROOT, exist_ok=True)
+    os.makedirs(MODEL_ROOT, exist_ok = True)
 
     # Instantiate model, loss and optimizer: --->
-    model = CrowdMLP().to(DEVICE)
+    model = CrowdMLP(in_channels = CHANNEL).to(DEVICE)
     criterion = CompositeCrowdLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    optimizer = torch.optim.Adam(model.parameters(), lr = LR)
 
     summary(model, (1, CHANNEL, 224, 224))
 

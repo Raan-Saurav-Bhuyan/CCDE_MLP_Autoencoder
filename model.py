@@ -2,13 +2,14 @@
 import torch.nn as nn
 
 class CrowdMLP(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels=1):
         super(CrowdMLP, self).__init__()
+
+        input_dim = 224 * 224 * in_channels
 
         # Encoder structure in sequential layers: --->
         self.encoder = nn.Sequential(
-            # nn.Linear(224 * 224 * 3, 1024),            #! Experiment 1 (RGB image as input of size 224 x 224 x 3)
-            nn.Linear(224 * 224 * 1, 1024),            #! Experiment 2 (Monochrome image as input of size 224 x 224 x 1)
+            nn.Linear(input_dim, 1024),
             nn.ReLU(),
             nn.Linear(1024, 256),
             nn.ReLU(),
@@ -27,7 +28,7 @@ class CrowdMLP(nn.Module):
             nn.Linear(256, 1024),
             nn.ReLU(),
             nn.Linear(1024, 224 * 224),
-            nn.Sigmoid()
+            # nn.Sigmoid()
         )
 
     def forward(self, x):

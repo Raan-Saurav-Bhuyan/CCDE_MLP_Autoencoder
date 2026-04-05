@@ -41,7 +41,7 @@ def train_model():
     os.makedirs(MODEL_ROOT, exist_ok=True)
 
     # Create model, loss, optimizer, and view the model summary: --->
-    model = CrowdMLP().to(DEVICE)
+    model = CrowdMLP(in_channels=CHANNEL).to(DEVICE)
     criterion = CompositeCrowdLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
     summary(model, (1, CHANNEL, 224, 224))
